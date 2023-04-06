@@ -1,0 +1,14 @@
+.PHONY: database backend frontend
+
+PYTHON=python3
+
+database:
+	cd backend/ && docker-compose up -d
+
+backend:
+	cd backend/ && $(PYTHON) main.py
+
+frontend:
+	cd frontend/ && $(PYTHON) main.py
+
+run: database backend frontend
