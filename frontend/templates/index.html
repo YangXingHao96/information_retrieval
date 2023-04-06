@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Indexing Result Page</title>
+    <style>
+        .back-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .load-more {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .load-more button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .load-more button:hover {
+            background-color: #45a049;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Crawled Tweets</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Content</th>
+                <th>Author</th>
+                <th>Posted Date</th>
+                <th>Subjectivity</th>
+                <th>Sentiment</th>
+            </tr>
+        </thead>
+        <tbody id="tweets-table">
+            {% for tweet in tweets[:20] %}
+            <tr>
+                <td>{{ tweet.content }}</td>
+                <td>{{ tweet.author }}</td>
+                <td>{{ tweet.posted_date }}</td>
+                <td>{{ tweet.subjectivity }}</td>
+                <td>{{ tweet.sentiment }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="text-align: center">
+        <button class="back-button" onclick="history.back()">Back</button>
+
+        {% if tweets[20:] %}
+        <div class="load-more">
+            <button id="load-more-btn">Load More</button>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var tweets = {{ tweets | tojson
+        }};
+        var currentIndex = 20;
+        $('#load-more-btn').click(function () {
+            var remainingTweets = tweets.slice(currentIndex, tweets.length);
+            if (remainingTweets.length == 0) {
+                $('.load-more').addClass('hidden');
+                return;
+            }
+            var html = '';
+            remainingTweets.slice(0, 20).forEach(function (tweet) {
+                html += '<tr>' +
+                    '<td>' + tweet.content + '</td>' +
+                    '<td>' + tweet.author + '</td>' +
+                    '<td>' + tweet.posted_date + '</td>' +
+                    '<td>' + tweet.subjectivity + '</td>' +
+                    '<td>' + tweet.sentiment + '</td>' +
+                    '</tr>';
+            });
+            $('#tweets-table').append(html);
+            currentIndex += 20;
+            if (currentIndex >= tweets.length) {
+                $('.load-more').addClass('hidden');
+            }
+        });
+      });
+    </script>
+</body>
+
+</html>

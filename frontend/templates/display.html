@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Search and Index</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/display_style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="sidebar">
+            <h2>Navigation</h2>
+            <ul>
+                <li><a href="#" id="search-link">Search</a></li>
+                <li><a href="#" id="index-link">Index</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <h1>Welcome!</h1>
+            <p>Please select a page from the navigation panel.</p>
+        </div>
+    </div>
+
+    <!-- Search page -->
+    <div id="search-page" style="display: none;">
+        <div class="container">
+            <h1>Search</h1>
+            <form method="POST" action="/search" onsubmit="return validateSearchForm()">
+                <div class="form-group">
+                    <label for="query_type">Query Type:</label>
+                    <select name="query_type" id="query_type" class="form-control" required>
+                        <option value="" disabled selected>Select a query type</option>
+                        <option value="company">Company</option>
+                        <option value="content">Content</option>
+                        <option value="author">Author</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="query_terms">Query Terms:</label>
+                    <input type="text" name="query_terms" id="query_terms" required>
+                </div>
+
+                <div class="form-group" required>
+                    <label for="start_date">Start Date:</label>
+                    <input type="text" name="start_date" id="start_date">
+                </div>
+
+                <div class="form-group">
+                    <label for="end_date">End Date:</label>
+                    <input type="text" name="end_date" id="end_date">
+                </div>
+
+                <div class="form-group">
+                    <label for="total_cnt">Total Count:</label>
+                    <input type="number" name="total_cnt" id="total_cnt" required>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Search">
+                </div>
+            </form>
+            <div id="error-container"></div>
+        </div>
+        <script>
+            function validateSearchForm() {
+                var input1 = document.getElementById("start_date").value;
+                var input2 = document.getElementById("end_date").value;
+                var input3 = document.getElementById("total_cnt").value;
+
+                // Check if both inputs are filled or both are empty
+
+                if ((input1 && !input2) || (!input1 && input2)) {
+                    alert("Please fill both date inputs or leave both empty.");
+                    return false; // Form submission will be stopped
+                } else if (input1 && input2 && input1 >= input2) {
+                    alert("Please make sure that the start date is strictly greater than the end date.");
+                    return false; // Form submission will be stopped
+                } else if (input3 <= 0) {
+                    alert("Please make sure that the total count is greater than 0.");
+                    return false;
+                } else {
+                    return true; // Form submission will continue
+                }
+            }
+        </script>
+        <script>
+            $(document).ready(function () {
+                // initialize the datepicker
+                $('#start_date, #end_date').datepicker({
+                    dateFormat: 'yy-mm-dd'
+                });
+
+                // show the search page when the search link is clicked
+                $('#search-link').click(function (e) {
+                    e.preventDefault();
+                    $('#search-page').show();
+                    $('#index-page').hide();
+                });
+            });
+        </script>
+    </div>
+    <!-- Index page -->
+    <div id="index-page" style="display: none;">
+        <div class="container">
+            <h1>Index</h1>
+            <form method="POST" action="/index" onsubmit="return validateIndexForm()">
+                <div class="form-group">
+                    <label for="company name">Company/Stock Name:</label>
+                    <input type="text" name="company name" id="company name" required>
+                </div>
+    
+                <div class="form-group">
+                    <label for="count">Count:</label>
+                    <input type="number" name="count" id="count" required>
+                </div>
+    
+                <div class="form-group">
+                    <input type="submit" value="Crawl">
+                </div>
+            </form>
+        </div>
+        <script>
+            function validateIndexForm() {
+                var input1 = document.getElementById("count").value;
+                if (input1 <= 0) {
+                    alert("Please make sure that the crawl count is greater than 0.");
+                    return false;
+                } else {
+                    return true; // Form submission will continue
+                }
+            }
+        </script>
+        <script>
+            $(document).ready(function () {
+                // show the index page when the index link is clicked
+                $('#index-link').click(function (e) {
+                    e.preventDefault();
+                    $('#search-page').hide();
+                    $('#index-page').show();
+                });
+            });
+        </script>
+    </div>
