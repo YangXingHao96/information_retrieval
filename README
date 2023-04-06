@@ -1,0 +1,12 @@
+To run the program:
+
+at root directory run:
+
+make database
+make backend
+make frontend
+
+ensure that make backend and make frontend are run on two different terminals
+
+access front end from
+http: // 127.0.0.1: 5001

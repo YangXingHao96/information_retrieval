@@ -10,5 +10,3 @@ backend:
 
 frontend:
 	cd frontend/ && $(PYTHON) main.py
-
-run: database backend frontend
