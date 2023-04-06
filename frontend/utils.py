@@ -26,3 +26,11 @@ def build_index_request(company_name, count):
         "crawl_count": int(count),
         "company": company_name
     }
+
+
+def build_summary_request(company_name, start_date, end_date):
+    return {
+        "company": company_name,
+        "start_date": start_date,
+        "end_date": end_date
+    }

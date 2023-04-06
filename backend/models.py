@@ -20,6 +20,13 @@ class crawl():
         self.company = company
 
 
+class summary():
+    def __init__(self, company: str, start_date: str, end_date: str):
+        self.company = company
+        self.start_date = start_date
+        self.end_date = end_date
+
+
 def query_decoder(req):
     try:
         q = query(req['type'], req['content'], req['count'])
@@ -40,6 +47,14 @@ def query_with_date_decoder(req):
 def crawl_decoder(req):
     try:
         q = crawl(req['company'], req['crawl_count'])
+        return q, ""
+    except Exception as e:
+        return None, "An exception has occured " + str(e)
+
+
+def summary_decoder(req):
+    try:
+        q = summary(req['company'], req['start_date'], req['end_date'])
         return q, ""
     except Exception as e:
         return None, "An exception has occured " + str(e)

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Summary</title>
+            <style>
+                /* CSS styles for the page */
+                body {
+                    background-color: #f1f1f1;
+                    font-family: Arial, sans-serif;
+                    text-align: center;
+                }
+            
+                h1 {
+                    color: #333333;
+                }
+            
+                .chart-container {
+                    display: inline-block;
+                    margin: 20px;
+                    width: 400px;
+                    height: 300px;
+                    text-align: center;
+                    background-color: #ffffff;
+                    border-radius: 5px;
+                    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+                }
+            
+                #back-btn {
+                    display: block;
+                    margin: auto;
+                    margin-top: 30px;
+                    padding: 10px 20px;
+                    background-color: #333333;
+                    color: #ffffff;
+                    border: none;
+                    border-radius: 5px;
+                    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+                    font-size: 16px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                }
+            
+                #back-btn:hover {
+                    background-color: #555555;
+                }
+            </style>
+        </style>
+    <!-- Load the Google Charts API -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            var data1 = google.visualization.arrayToDataTable([
+                ['Sentiment', 'Count'],
+                ['Positive', {{ result.positive }}],
+        ['Neutral', {{ result.neutral }}],
+            ['Negative', {{ result.negative }}]
+        ]);
+        var options1 = {
+            title: 'Sentiment',
+            pieHole: 0.4
+        };
+        var chart1 = new google.visualization.PieChart(document.getElementById('chart1'));
+        chart1.draw(data1, options1);
+
+        var data2 = google.visualization.arrayToDataTable([
+            ['Subjectivity', 'Count'],
+            ['Subjective', {{ result.subjective }}],
+        ['Non-Subjective', {{ result.non_subjective }}]
+        ]);
+        var options2 = {
+            title: 'Subjectivity',
+            pieHole: 0.4
+        };
+        var chart2 = new google.visualization.PieChart(document.getElementById('chart2'));
+        chart2.draw(data2, options2);
+
+        var data3 = google.visualization.arrayToDataTable([
+            ['Non-Subjective Sentiment', 'Count'],
+            ['Negative', {{ result.non_subjective_negative }}],
+        ['Neutral', {{ result.non_subjective_neutral }}],
+            ['Positive', {{ result.non_subjective_positive }}]
+        ]);
+        var options3 = {
+            title: 'Non-Subjective Sentiment',
+            pieHole: 0.4
+        };
+        var chart3 = new google.visualization.PieChart(document.getElementById('chart3'));
+        chart3.draw(data3, options3);
+
+        var data4 = google.visualization.arrayToDataTable([
+            ['Subjective Sentiment', 'Count'],
+            ['Negative', {{ result.subjective_negative }}],
+        ['Neutral', {{ result.subjective_neutral }}],
+            ['Positive', {{ result.subjective_positive }}]
+        ]);
+        var options4 = {
+            title: 'Subjective Sentiment',
+            pieHole: 0.4
+        };
+        var chart4 = new google.visualization.PieChart(document.getElementById('chart4'));
+        chart4.draw(data4, options4);
+      }
+    </script>
+</head>
+<body>
+    <h1>My Pie Charts</h1>
+
+    <div class="chart-container">
+        <div id="chart1"></div>
+        <h3>Sentiment</h3>
+    </div>
+
+    <div class="chart-container">
+        <div id="chart2"></div>
+        <h3>Subjectivity</h3>
+    </div>
+
+    <div class="chart-container">
+        <div id="chart3"></div>
+        <h3>Non-Subjective Sentiment</h3>
+    </div>
+
+    <div class="chart-container">
+        <div id="chart4"></div>
+        <h3>Subjective Sentiment</h3>
+    </div>
+
+    <button id="back-btn" onclick="goBack()">Back</button>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+
+</html>

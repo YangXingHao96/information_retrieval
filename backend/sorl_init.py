@@ -22,7 +22,7 @@ def initSolr():
             "raw_text": row["body"],
             "like_num": row["like_num"],
             "subjectivity": row["subjectivity"],
-            "sentiment": row["sentiment"],
+            "sentiment": int(row["sentiment"]),
             "clean_text": row["clean_text_no_stem_user"],
         })
     # ticker_symbol_to_name_mapping = {"AAPL": "apple",

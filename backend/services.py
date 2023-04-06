@@ -59,6 +59,21 @@ def validate_crawl(crawl_req: crawl):
     return ""
 
 
+def validate_summary(summary_req: summary):
+    if not isinstance(summary_req.company, str):
+        return "summary request company name must be of type string"
+    elif summary_req.company == "":
+        return "summary request company name must not be empty"
+    elif summary_req.start_date == "":
+        return "summary request start date must not be empty"
+    elif summary_req.end_date == "":
+        return "summary request end date must not be empty"
+    elif summary_req.start_date >= summary_req.end_date:
+        return "summary request end date must be greater than summary request start date"
+    print("validation successful")
+    return ""
+
+
 def query_solr(query_req: query):
     try:
         sorl = pysolr.Solr(SOLR_URL, always_commit=True)
@@ -157,3 +172,114 @@ def crawl_tweets(crawl_req: crawl):
     return extracted_data, ""
     # except Exception as e:
     #     return None, "Exception: " + str(e.with_traceback())
+
+
+def get_summary(summary_req: summary):
+    sorl = pysolr.Solr(SOLR_URL, always_commit=True)
+    start_yr, start_mth, start_day = summary_req.start_date.split("-")
+    end_yr, end_mth, end_day = summary_req.end_date.split("-")
+    start_yr, start_mth, start_day = int(
+        start_yr), int(start_mth), int(start_day)
+    end_yr, end_mth, end_day = int(end_yr), int(end_mth), int(end_day)
+    start_date = datetime.datetime(start_yr, start_mth, start_day)
+    end_date = datetime.datetime(end_yr, end_mth, end_day)
+    start_date_str = start_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+    end_date_str = end_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+    range_query = 'post_date:[{} TO {}]'.format(
+        start_date_str, end_date_str)
+    q = "company" + ':' + summary_req.company
+    normal_params = {
+        'q': q,
+        'fq': range_query,
+        'rows': 0,
+    }
+    results = sorl.search(**normal_params)
+    total_tweets = results.hits
+
+    subjective_params = {
+        'q': q + " AND subjectivity:1",
+        'fq': range_query,
+        'rows': 0,
+    }
+    results = sorl.search(**subjective_params)
+    subjective_tweets = results.hits
+
+    non_subjective_params = {
+        'q': q + " AND subjectivity:0",
+        'fq': range_query,
+        'rows': 0,
+    }
+    results = sorl.search(**non_subjective_params)
+    non_subjective_tweets = results.hits
+
+    neutral_sentiment_params = {
+        'q': q + " AND sentiment:0",
+        'fq': range_query,
+        'rows': 0,
+    }
+    results = sorl.search(**neutral_sentiment_params)
+    neutral_tweets = results.hits
+
+    positive_sentiment_params = {
+        'q': q + " AND sentiment:1",
+        'fq': range_query,
+        'rows': 0,
+    }
+
+    results = sorl.search(**positive_sentiment_params)
+    positive_tweets = results.hits
+
+    negative_tweets = total_tweets - positive_tweets - neutral_tweets
+
+    non_sub_neu_params = {
+        'q': q + " AND subjectivity:0 AND sentiment:0",
+        'fq': range_query,
+        'rows': 0,
+    }
+    results = sorl.search(**non_sub_neu_params)
+    non_subjective_neutral = results.hits
+
+    non_sub_pos_params = {
+        'q': q + " AND subjectivity:0 AND sentiment:1",
+        'fq': range_query,
+        'rows': 0,
+    }
+    results = sorl.search(**non_sub_pos_params)
+    non_subjective_positive = results.hits
+    non_subjective_negative = non_subjective_tweets - \
+        non_subjective_positive - non_subjective_neutral
+
+    sub_neu_params = {
+        'q': q + " AND subjectivity:1 AND sentiment:0",
+        'fq': range_query,
+        'rows': 0,
+    }
+    results = sorl.search(**sub_neu_params)
+    subjective_neutral = results.hits
+
+    sub_pos_params = {
+        'q': q + " AND subjectivity:1 AND sentiment:1",
+        'fq': range_query,
+        'rows': 0,
+    }
+    results = sorl.search(**sub_pos_params)
+    subjective_positive = results.hits
+
+    subjective_negative = subjective_tweets - \
+        subjective_positive - subjective_neutral
+
+    response = {
+        "total": total_tweets,
+        "subjective": subjective_tweets,
+        "non_subjective": non_subjective_tweets,
+        "negative": negative_tweets,
+        "neutral": neutral_tweets,
+        "positive": positive_tweets,
+        "non_subjective_negative": non_subjective_negative,
+        "non_subjective_neutral": non_subjective_neutral,
+        "non_subjective_positive": non_subjective_positive,
+        "subjective_negative": subjective_negative,
+        "subjective_neutral": subjective_neutral,
+        "subjective_positive": subjective_positive
+    }
+    return response, ""

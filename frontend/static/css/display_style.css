@@ -113,3 +113,44 @@
 #index-page input[type="submit"]:hover {
     background-color: #3e8e41;
 }
+/* Summary page */
+#summary-page .container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+#summary-page h1 {
+    margin-top: 0;
+}
+
+#summary-page p {
+    margin-bottom: 20px;
+}
+
+#summary-page input[type="text"],
+#summary-page input[type="number"],
+#summary-page select {
+    display: block;
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 3px;
+    box-shadow: 0 0 5px #ccc;
+}
+
+#summary-page input[type="submit"] {
+    display: block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#summary-page input[type="submit"]:hover {
+    background-color: #3e8e41;
+}

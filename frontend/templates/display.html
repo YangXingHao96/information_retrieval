@@ -16,6 +16,7 @@
             <ul>
                 <li><a href="#" id="search-link">Search</a></li>
                 <li><a href="#" id="index-link">Index</a></li>
+                <li><a href="#" id="summary-link">Summary</a></li>
             </ul>
         </div>
         <div class="main-content">
@@ -98,6 +99,7 @@
                 $('#search-link').click(function (e) {
                     e.preventDefault();
                     $('#search-page').show();
+                     $('#summary-page').hide();
                     $('#index-page').hide();
                 });
             });
@@ -108,12 +110,12 @@
         <div class="container">
             <h1>Index</h1>
             <form method="POST" action="/index" onsubmit="return validateIndexForm()">
-                <div class="form-group">
+                <div class="form-group" required>
                     <label for="company name">Company/Stock Name:</label>
                     <input type="text" name="company name" id="company name" required>
                 </div>
     
-                <div class="form-group">
+                <div class="form-group" required>
                     <label for="count">Count:</label>
                     <input type="number" name="count" id="count" required>
                 </div>
@@ -140,7 +142,59 @@
                 $('#index-link').click(function (e) {
                     e.preventDefault();
                     $('#search-page').hide();
+                    $('#summary-page').hide();
                     $('#index-page').show();
+                });
+            });
+        </script>
+    </div>
+    <!-- Index page -->
+    <div id="summary-page" style="display: none;">
+        <div class="container">
+            <h1>Summary</h1>
+            <form method="POST" action="/summary">
+                <div class="form-group" required>
+                    <label for="company">Company:</label>
+                    <input type="text" name="company" id="company" required>
+                </div>
+                
+                <div class="form-group" required>
+                    <label for="start_date_summary">Start Date:</label>
+                    <input type="text" name="start_date_summary" id="start_date_summary" required>
+                </div>
+                
+                <div class="form-group" required>
+                    <label for="end_date_summary">End Date:</label>
+                    <input type="text" name="end_date_summary" id="end_date_summary" required>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Summary">
+                </div>
+            </form>
+        </div>
+        <script>
+            function validateIndexForm() {
+                var input1 = document.getElementById("start_date_summary").value;
+                var input2 = document.getElementById("end_date_summary").value;
+                if (input1 >= input2) {
+                    alert("Please make sure that the start date is strictly greater than the end date.");
+                    return false; // Form submission will be stopped
+                } 
+                return true
+            }
+        </script>
+        <script>
+            $(document).ready(function () {
+                $('#start_date_summary, #end_date_summary').datepicker({
+                    dateFormat: 'yy-mm-dd'
+                });
+                // show the index page when the index link is clicked
+                $('#summary-link').click(function (e) {
+                    e.preventDefault();
+                    $('#search-page').hide();
+                    $('#index-page').hide();
+                    $('#summary-page').show();
                 });
             });
         </script>

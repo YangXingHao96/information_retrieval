@@ -54,3 +54,19 @@ def handle_crawl(crawl):
         jsonify({"result": result}),
         200
     ), ""
+
+
+def handle_summary(summary):
+    summary_req, err = summary_decoder(summary)
+    if err != '':
+        return None, err
+    err = validate_summary(summary_req)
+    if err != '':
+        return None, err
+    result, err = get_summary(summary_req)
+    if err != '':
+        return None, err
+    return make_response(
+        jsonify({"result": result}),
+        200
+    ), ""

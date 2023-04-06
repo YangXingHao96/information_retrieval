@@ -8,6 +8,7 @@ app.secret_key = 'mysecretkey'
 search_url = "http://127.0.0.1:5000/query"
 search_withdate_url = "http://127.0.0.1:5000/querywithdate"
 crawl_url = "http://127.0.0.1:5000/crawl"
+summary_url = "http://127.0.0.1:5000/summary"
 
 
 @app.route('/')
@@ -88,6 +89,27 @@ def search():
         tweets.append(processed_tweet)
     print(tweets)
     return render_template('results.html', tweets=tweets)
+
+
+@app.route('/summary', methods=['POST'])
+def summary():
+    company = request.form['company']
+    start_date = request.form['start_date_summary']
+    end_date = request.form['end_date_summary']
+    summary_req = utils.build_summary_request(company, start_date, end_date)
+    req_headers = {
+        'Content-Type': 'application/json'
+    }
+    response = requests.post(summary_url, data=json.dumps(
+        summary_req), headers=req_headers)
+    data = response.json()
+    if response.status_code != 200:
+        print(
+            f"{response.status_code} error: Post request to {summary_req} could not be completed.")
+        print(f"Error returned: {data['error']}")
+        return render_template('display.html')
+    print(data["result"])
+    return render_template("piecharts.html", result=data["result"])
 
 
 if __name__ == '__main__':
