@@ -152,7 +152,7 @@
     <div id="summary-page" style="display: none;">
         <div class="container">
             <h1>Summary</h1>
-            <form method="POST" action="/summary">
+            <form method="POST" action="/summary" onsubmit="return validateSummaryForm()">
                 <div class="form-group" required>
                     <label for="company">Company:</label>
                     <input type="text" name="company" id="company" required>
@@ -174,7 +174,7 @@
             </form>
         </div>
         <script>
-            function validateIndexForm() {
+            function validateSummaryForm() {
                 var input1 = document.getElementById("start_date_summary").value;
                 var input2 = document.getElementById("end_date_summary").value;
                 if (input1 >= input2) {
