@@ -7,6 +7,7 @@ import contractions
 import textstat
 import emoji as Emoji
 import nltk
+nltk.download('stopwords')
 from nltk.stem.porter import PorterStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.snowball import SnowballStemmer
