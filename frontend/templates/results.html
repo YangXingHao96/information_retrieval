@@ -5,17 +5,18 @@
     <title>Search Result Page</title>
     <style>
         .back-button {
-        background-color: #4CAF50;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 10px;
-        cursor: pointer;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
         }
+
         table {
             border-collapse: collapse;
             width: 100%;
@@ -59,7 +60,16 @@
 </head>
 
 <body>
-    <h1>Searched Tweets</h1>
+    {% if suggestions %}
+    <h1>Did you mean?</h2>
+    <ul>
+        {% for suggestion in suggestions %}
+        <li>{{ suggestion }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    <h2>Searched Tweets</h1>
     <table>
         <thead>
             <tr>
@@ -71,7 +81,7 @@
             </tr>
         </thead>
         <tbody id="tweets-table">
-            {% for tweet in tweets[:20] %}
+            {% for tweet in tweets %}
             <tr>
                 <td>{{ tweet.content }}</td>
                 <td>{{ tweet.author }}</td>
@@ -82,23 +92,26 @@
             {% endfor %}
         </tbody>
     </table>
-
     <div style="text-align: center">
         <button class="back-button" onclick="history.back()">Back</button>
     
-        {% if tweets[20:] %}
+        {% if tweets|length > 20 %}
         <div class="load-more">
             <button id="load-more-btn">Load More</button>
         </div>
         {% endif %}
     </div>
 
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
+       $(document).ready(function () {
             var tweets = {{ tweets | tojson
         }};
         var currentIndex = 20;
+        var suggestions = {{ suggestions | tojson }};
+
+        // Load more tweets when button is clicked
         $('#load-more-btn').click(function () {
             var remainingTweets = tweets.slice(currentIndex, tweets.length);
             if (remainingTweets.length == 0) {
@@ -121,8 +134,20 @@
                 $('.load-more').addClass('hidden');
             }
         });
-      });
-    </script>
-</body>
 
-</html>
+        // Display suggestions if available
+        if (suggestions.length > 0) {
+            var suggestionHtml = '';
+            suggestionHtml += '<p>Did you mean: ';
+            suggestions.forEach(function (suggestion, index) {
+                if (index == 0) {
+                    suggestionHtml += '<b>' + suggestion + '</b>';
+                } else {
+                    suggestionHtml += ', ' + suggestion;
+                }
+            });
+            suggestionHtml += '</p>';
+            $('#suggestions').html(suggestionHtml);
+        }
+    });
+    </script>

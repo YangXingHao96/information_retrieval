@@ -3,6 +3,16 @@ import pandas as pd
 
 
 def initSolr():
+    admin = pysolr.SolrCoreAdmin('http://localhost:8983/solr/admin/cores')
+    # solr = pysolr.Solr('http://localhost:8983/solr')
+# Define core name and configuration directory
+    core_name = 'stock_project_core'
+    config_dir = 'backend/solr/configsets/stock_project_configs'
+
+# Create the core
+
+    resp = admin.create(core_name, config_dir)
+
     solr = pysolr.Solr(
         'http://localhost:8983/solr/stock_project_core', always_commit=True)
     solr.ping()
@@ -25,13 +35,5 @@ def initSolr():
             "sentiment": int(row["sentiment"]),
             "clean_text": row["clean_text_no_stem_user"],
         })
-    # ticker_symbol_to_name_mapping = {"AAPL": "apple",
-    #                                  "AMZN": "amazon",
-    #                                  "GOOGL": "google",
-    #                                  "MSFT": "Microsoft",
-    #                                  "TSLA": "Tesla"}
-
-    # for i in range(len(extracted_data)):
-    #     extracted_data[i]["company"] = ticker_symbol_to_name_mapping[extracted_data[i]["company"]]
     resp = solr.add(extracted_data)
     print(resp)

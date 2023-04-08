@@ -9,6 +9,29 @@ import itertools
 from clean import *
 import uuid
 
+from textblob import TextBlob
+
+
+def is_subjective(text):
+    blob = TextBlob(text)
+    polarity = blob.sentiment.polarity
+    subjectivity = blob.sentiment.subjectivity
+    if subjectivity > 0.5:
+        return 1
+    return 0
+
+
+def get_sentiment(text):
+    blob = TextBlob(text)
+    sentiment_score = blob.sentiment.polarity
+
+    if sentiment_score < 0:
+        return -1
+    elif sentiment_score == 0:
+        return 0
+    else:
+        return 1
+
 
 def validate_query(query_req: query):
     if not isinstance(query_req.msg_type, str):
@@ -83,14 +106,21 @@ def query_solr(query_req: query):
         else:
             query_phrase = query_req.msg_type + ':' + query_req.search_phrase
         print(query_phrase)
-        result = sorl.search(query_phrase, rows=query_req.cnt)
+        results = sorl.search(query_phrase, rows=query_req.cnt)
         final = []
-        for res in result:
+        for res in results:
             final.append(res)
-
-        return final, ""
+        prefix = query_req.msg_type + ":"
+        corrections = []
+        for i, v in enumerate(results.spellcheck["collations"]):
+            if i % 2 == 0:
+                continue
+            else:
+                s = v.replace(prefix, "")
+                corrections.append(s)
+        return final, corrections, ""
     except Exception as e:
-        return None, "Exception: " + str(e.with_traceback())
+        return None, None, "Exception: " + str(e.with_traceback())
 
 
 def query_with_date_solr(query_req: query_with_date):
@@ -117,9 +147,17 @@ def query_with_date_solr(query_req: query_with_date):
         final = []
         for res in results:
             final.append(res)
-        return final, ""
+        prefix = query_req.msg_type + ":"
+        corrections = []
+        for i, v in enumerate(results.spellcheck["collations"]):
+            if i % 2 == 0:
+                continue
+            else:
+                s = v.replace(prefix, "")
+                corrections.append(s)
+        return final, corrections, ""
     except Exception as e:
-        return None, "Exception: " + str(e.with_traceback())
+        return None, None, "Exception: " + str(e.with_traceback())
 
 
 def crawl_tweets(crawl_req: crawl):
@@ -163,8 +201,8 @@ def crawl_tweets(crawl_req: crawl):
             "author": row["author"],
             "raw_text": row["raw_text"],
             "like_num": row["like_num"],
-            "subjectivity": row["subjectivity"],
-            "sentiment": row["sentiment"],
+            "subjectivity": is_subjective(row["clean_text"]),
+            "sentiment": get_sentiment(row["clean_text"]),
             "clean_text": row["clean_text"],
         })
 

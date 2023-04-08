@@ -1,14 +1,13 @@
-version: '2'
+version: '3'
 services:
   solr:
     image: solr
     ports:
-     - "8983:8983"
+      - "8983:8983"
     volumes:
-      - data:/opt/solr/server/solr/mycores
-    entrypoint:
-      - docker-entrypoint.sh
-      - solr-precreate
-      - stock_project_core
-volumes:
-  data:
+      - ./solr/data:/opt/solr/server/solr/mycores
+      - ./solr/configsets:/opt/solr/server/solr/configsets/
+      - ./solr/scripts:/opt/solr/docker-entrypoint-initdb.d/
+    environment:
+      - SOLR_HOME=/opt/solr/server/solr/configsets/stock_project_configs
+  

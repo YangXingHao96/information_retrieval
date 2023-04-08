@@ -9,6 +9,11 @@
     width: 200px;
     height: 100%;
     padding: 20px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .sidebar h2 {
@@ -41,10 +46,12 @@
 .main-content {
     flex: 1;
     padding: 20px;
+    text-align: center;
 }
 
 .main-content h1 {
     margin-top: 0;
+    text-align: center;
 }
 
 /* Search page */

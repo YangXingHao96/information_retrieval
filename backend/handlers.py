@@ -11,12 +11,12 @@ def handle_query(query):
     err = validate_query(query_req)
     if err != '':
         return None, err
-    result, err = query_solr(query_req)
+    result, corrections, err = query_solr(query_req)
     if err != '':
         return None, err
 
     return make_response(
-        jsonify({"result": result}),
+        jsonify({"result": result, "corrections": corrections}),
         200
     ), ""
 
@@ -30,11 +30,11 @@ def handle_query_with_date(query):
     err = validate_query_with_date(query_with_date_req)
     if err != '':
         return None, err
-    result, err = query_with_date_solr(query_with_date_req)
+    result, corrections, err = query_with_date_solr(query_with_date_req)
     if err != '':
         return None, err
     return make_response(
-        jsonify({"result": result}),
+        jsonify({"result": result, "corrections": corrections}),
         200
     ), ""
 

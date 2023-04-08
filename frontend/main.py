@@ -82,13 +82,13 @@ def search():
         processed_tweet = {
             'content': raw_tweet["raw_text"][0],
             'author': raw_tweet["author"][0],
-            'posted_date': raw_tweet["post_date"][0],
+            'posted_date': raw_tweet["post_date"],
             'subjectivity': int(raw_tweet["subjectivity"][0]),
             'sentiment': int(raw_tweet["sentiment"][0])
         }
         tweets.append(processed_tweet)
-    print(tweets)
-    return render_template('results.html', tweets=tweets)
+    suggestions = data["corrections"]
+    return render_template('results.html', tweets=tweets, suggestions=suggestions)
 
 
 @app.route('/summary', methods=['POST'])
